@@ -1,0 +1,144 @@
+.window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 8% 16px;
+}
+
+.listNote {
+  align-self: center;
+  margin: 4px auto 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 55%);
+  color: #35566f;
+  font-size: 13px;
+}
+
+.listEmpty {
+  margin: auto;
+}
+
+.rowIn,
+.rowOut {
+  display: flex;
+}
+
+.rowOut {
+  justify-content: flex-end;
+}
+
+.bubble {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: min(560px, 72%);
+  padding: 8px 12px;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgb(11 28 44 / 10%);
+}
+
+.bubbleIn {
+  border-bottom-left-radius: 6px;
+  background: var(--bubble-in);
+}
+
+.bubbleOut {
+  border-bottom-right-radius: 6px;
+  background: var(--bubble-out);
+  color: #fff;
+}
+
+.text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Нетекстовое сообщение из истории: показываем только его тип */
+.attachment {
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font-size: 11px;
+  opacity: 0.7;
+  transform: translateY(3px);
+}
+
+.time {
+  white-space: nowrap;
+}
+
+.pending {
+  white-space: nowrap;
+}
+
+.failed {
+  color: #ffd6d7;
+  white-space: nowrap;
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex: none;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.textarea {
+  composes: control from '../styles/controls.module.css';
+  flex: 1;
+  max-height: 140px;
+  min-height: 42px;
+  padding: 11px 16px;
+  border-radius: 21px;
+  resize: none;
+}
+
+.send {
+  composes: round from '../styles/controls.module.css';
+  width: 42px;
+  height: 42px;
+  font-size: 16px;
+}

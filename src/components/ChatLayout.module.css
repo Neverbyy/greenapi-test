@@ -1,0 +1,25 @@
+.layout {
+  display: flex;
+  height: 100%;
+}
+
+.main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--wallpaper);
+}
+
+.banner {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 2;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgb(11 28 44 / 72%);
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}

@@ -1,0 +1,85 @@
+.screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px;
+  background: var(--wallpaper);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 380px;
+  padding: 32px 28px;
+  border-radius: 24px;
+  background: var(--bg);
+  box-shadow: 0 20px 50px rgb(11 28 44 / 18%);
+}
+
+.logo {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3aa0ff, #0055ff);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.title {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.input {
+  composes: control from '../styles/controls.module.css';
+}
+
+.error {
+  composes: error from '../styles/controls.module.css';
+  font-size: 13px;
+}
+
+.submit {
+  composes: primary from '../styles/controls.module.css';
+  margin-top: 6px;
+  padding: 12px;
+}
+
+.hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.hint a {
+  color: var(--accent);
+}

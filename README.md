@@ -1,78 +1,105 @@
-# React + TypeScript + Vite
+# Чат для мессенджера MAX на GREEN-API
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-клиент для переписки в мессенджере [MAX](https://max.ru) через [GREEN-API](https://green-api.com/max): пользователь вводит учётные данные своего инстанса, создаёт чат по номеру телефона и обменивается текстовыми сообщениями. Интерфейс — упрощённый прототип [web.max.ru](https://web.max.ru).
 
-Currently, two official plugins are available:
+Стек: **React 19 + TypeScript**, **Vite**, **Zustand** (клиентский стейт), **TanStack Query** (серверный стейт). Бэкенда нет — браузер ходит в GREEN-API напрямую.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Быстрая проверка
 
-## React Compiler
+1. Войти по учётным данным — приложение пустит дальше только при состоянии `authorized`.
+2. Создать чат по номеру получателя, зарегистрированного в MAX. Имя, аватар и история появятся сами.
+3. Отправить сообщение — оно придёт получателю в MAX.
+4. Ответить из MAX — ответ появится в приложении в пределах секунды.
+5. Удалить своё сообщение в MAX «у всех» — оно исчезнет и в приложении.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Локальное развёртывание
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+Нужен **Node.js 20.19+ или 22+** (проверено на 22.18) и npm.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install     # установка зависимостей
+npm run dev     # запуск в режиме разработки → http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Остальные команды:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run build     # production-сборка в dist/
+npm run preview   # локальный просмотр собранной версии
+npm run lint      # проверка ESLint
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Отдельный сервер или прокси не нужны: GREEN-API отдаёт `Access-Control-Allow-Origin: *`, поэтому запросы уходят из браузера напрямую.
+
+## Подготовка инстанса GREEN-API
+
+Без этих шагов приложению не с чем работать.
+
+1. **Аккаунт MAX.** Нужен телефон с установленным приложением MAX — от имени этого аккаунта будут уходить сообщения.
+2. **Регистрация в GREEN-API** — [console.green-api.com](https://console.green-api.com/registration).
+3. **Создание инстанса MAX.** Подойдёт бесплатный тариф «Разработчик» (до 3 чатов в месяц). Инстанс поднимается 2–5 минут.
+4. **Авторизация инстанса по QR-коду:** в кабинете нажать «Получить QR-код», в приложении MAX — Профиль → Устройства → «Войти по QR-коду». Для этого в MAX должен быть отключён пароль на вход.
+5. **Включить уведомления.** Приложение читает их из очереди HTTP API, поэтому в настройках инстанса:
+
+   | Параметр | Значение | Зачем |
+   |---|---|---|
+   | `webhookUrl` | пустой | иначе уведомления уйдут на внешний адрес, а очередь останется пустой |
+   | `incomingWebhook` | `yes` | сообщения собеседника |
+   | `outgoingAPIMessageWebhook` | `yes` | эхо своих отправок: по нему приложение связывает чат с внутренним id MAX |
+   | `outgoingMessageWebhook` | `yes` | действия с телефона, включая удаление сообщений |
+   | `deletedMessageWebhook` | `yes` | удаление сообщений в MAX |
+   | `stateWebhook` | `yes` | изменение состояния инстанса |
+
+   Проверить текущие настройки можно запросом:
+
+   ```bash
+   curl "https://api.green-api.com/waInstance{idInstance}/getSettings/{apiTokenInstance}"
+   ```
+
+   После изменения настроек инстанс перезагружается: они применяются в течение пяти минут.
+
+6. Скопировать `idInstance`, `apiTokenInstance` и `apiUrl` из карточки инстанса и ввести на экране входа.
+
+Получатель должен быть **другим** аккаунтом MAX: отправка на собственный номер не работает, такой чат в MAX служебный.
+
+## Как это устроено
+
+### Разделение стейта
+
+**Zustand** держит клиентский стейт: учётные данные ([`authStore.ts`](src/store/authStore.ts)), чаты и сообщения ([`chatStore.ts`](src/store/chatStore.ts)); оба стора сохраняются в `localStorage` через middleware `persist`. **TanStack Query** отвечает за сеть: опрос очереди уведомлений, отправку сообщений, карточку контакта и историю. Вся логика разбора уведомлений вынесена в чистые функции ([`notifications.ts`](src/store/notifications.ts)).
+
+### Отправка
+
+[`POST /waInstance{id}/sendMessage/{token}`](https://green-api.com/v3/docs/api/sending/SendMessage/) с телом `{ chatId, message }`. `chatId` личного чата собирается из номера: `79991234567@c.us`.
+
+### Два вида chatId в MAX
+
+Отправка работает с идентификатором вида `79991234567@c.us`, а в уведомлениях `senderData.chatId` — это внутренний числовой id MAX (например `30205162`). Поэтому входящее сообщение ищет свой чат по трём признакам: по `chatId` и ранее выученным алиасам, по `senderPhoneNumber`, и только потом создаёт новый чат. Числовой id запоминается как алиас — из карточки контакта или из эхо-уведомления о собственной отправке. Дубли отсекаются по `idMessage`.
+
+### Имя, аватар, история
+
+Справочные методы MAX работают только с числовым id, и единственное исключение — [`getContactInfo`](https://green-api.com/v3/docs/api/service/GetContactInfo/): он принимает `@c.us` и сразу возвращает числовой `chatId`, имя и ссылку на аватар. С него начинается работа с новым чатом ([`useContactInfo.ts`](src/hooks/useContactInfo.ts)), а полученный id открывает доступ к истории ([`useChatHistory.ts`](src/hooks/useChatHistory.ts)).
+
+Эти методы жёстко лимитированы — два запроса подряд уже дают `429`, — поэтому каждый выполняется один раз на чат и повторяется с экспоненциальной задержкой только на превышение лимита ([`rateLimit.ts`](src/hooks/rateLimit.ts)).
+
+### Удаление сообщений
+
+Уведомление приходит с `typeMessage: "deletedMessage"`, id удалённого сообщения лежит в `deletedMessageData.stanzaId`. Обрабатываются оба направления: удаление своего сообщения приходит исходящим уведомлением, чужого — входящим. История тоже учитывает удаления (`isDeleted` и записи `deletedMessage`), поэтому сообщение не вернётся в ленту после перезагрузки.
+
+## Структура проекта
 
 ```
+src/
+  api/          client.ts — запросы и разбор ошибок; greenApi.ts — методы GREEN-API; types.ts
+  store/        authStore.ts — учётные данные; chatStore.ts — чаты и сообщения;
+                notifications.ts — чистые функции разбора уведомлений; types.ts
+  hooks/        useNotificationPoller.ts — опрос очереди; useSendMessage.ts — отправка;
+                useContactInfo.ts — имя, аватар, числовой id; useChatHistory.ts — история;
+                rateLimit.ts — общие опции справочных запросов
+  components/   LoginScreen, ChatLayout, Sidebar, NewChatForm, ChatListItem, ChatContextMenu,
+                ChatWindow, MessageList, MessageBubble, Composer, PhoneInput, Avatar, EmptyState
+  styles/       controls.module.css — общие примитивы полей и кнопок
+  utils/        phone.ts — нормализация, маска и валидация номера; time.ts; cx.ts
+```
+
+Стилизация — CSS Modules без дополнительных зависимостей; повторяющиеся стили полей и кнопок подключаются через `composes`.

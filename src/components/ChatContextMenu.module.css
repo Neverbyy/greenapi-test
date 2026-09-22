@@ -1,0 +1,31 @@
+.menu {
+  position: fixed;
+  z-index: 10;
+  min-width: 200px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: 0 8px 28px rgb(11 28 44 / 22%);
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: var(--bg-muted);
+}
+
+.menuDanger {
+  color: var(--danger);
+}
+
+.menuDanger:hover {
+  background: var(--danger-soft);
+}

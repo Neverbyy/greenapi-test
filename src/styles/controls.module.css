@@ -1,0 +1,46 @@
+/* Примитивы формы: подмешиваются в компонентные модули через composes */
+
+.control {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--bg-muted);
+  outline: none;
+}
+
+.control:focus {
+  border-color: var(--accent);
+  background: var(--bg);
+}
+
+.primary {
+  border: none;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.round {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+}
+
+.round:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+}
